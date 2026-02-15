@@ -2,6 +2,8 @@
 
 An **end-to-end Data Engineering project** implementing the **Medallion Architecture (Bronze → Silver → Gold)** on **Databricks (Delta Lake)** and building a **Star Schema semantic model** for **Power BI dashboards**.
 
+<img width="500" height="600" alt="image" src="https://github.com/user-attachments/assets/242f7af1-7c59-4943-a677-28d015f91809" />
+
 This project demonstrates **data ingestion, transformation, dimensional modeling, surrogate key strategy, data quality handling, and business KPI reporting**.
 
 ## 📌 Project Architecture
