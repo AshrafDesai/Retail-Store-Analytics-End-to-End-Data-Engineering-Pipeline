@@ -1,0 +1,22 @@
+USE CATALOG retail_catalog;
+USE SCHEMA bronze;
+
+CREATE OR REPLACE TABLE silver.retail_sales_clean
+USING DELTA
+AS
+SELECT
+    transaction_id,
+    customer_id,
+    UPPER(category)                AS category,
+    UPPER(item)                    AS item,
+    CAST(price_per_unit AS DOUBLE) AS price_per_unit,
+    CAST(quantity AS INT)          AS quantity,
+    CAST(total_spent AS DOUBLE)    AS total_spent,
+    UPPER(payment_method)          AS payment_method,
+    UPPER(location)                AS location,
+    TO_DATE(transaction_date)      AS transaction_date,
+    COALESCE(CAST(discount_applied AS BOOLEAN), FALSE) AS discount_applied
+FROM bronze.retail_sales_raw
+WHERE transaction_id IS NOT NULL;
+
+select * from silver.retail_sales_clean LIMIT 5;

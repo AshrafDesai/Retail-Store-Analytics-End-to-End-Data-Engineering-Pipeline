@@ -1,0 +1,37 @@
+
+USE CATALOG retail_catalog;
+USE SCHEMA silver;
+
+CREATE OR REPLACE TABLE dim_calendar_final
+USING DELTA
+AS
+SELECT
+  date,
+  YEAR(date)        AS year,
+  MONTH(date)       AS month,
+  DATE_FORMAT(date, 'MMMM') AS month_name,
+  DAY(date)         AS day,
+  WEEKOFYEAR(date)  AS week_of_year,
+  QUARTER(date)     AS quarter
+FROM dim_calendar;
+
+
+select * from dim_calendar limit 5;
+
+CREATE OR REPLACE TABLE dim_calendar
+USING DELTA
+AS
+WITH date_range AS (
+  SELECT
+    MIN(transaction_date) AS min_date,
+    MAX(transaction_date) AS max_date
+  FROM retail_catalog.silver.retail_sales_clean
+)
+SELECT
+  explode(sequence(min_date, max_date, interval 1 day)) AS date
+FROM date_range;
+
+
+select * from dim_calendar limit 5;
+
+Show tables;

@@ -1,0 +1,92 @@
+USE CATALOG retail_catalog;
+USE SCHEMA gold;
+--Dim Customer
+
+CREATE OR REPLACE TABLE gold.dim_customer
+USING DELTA
+AS
+SELECT DISTINCT
+  customer_id,
+  DENSE_RANK() OVER (ORDER BY customer_id) AS customer_key
+FROM silver.retail_sales_clean;
+
+select * from gold.dim_customer limit 5;
+
+INSERT INTO gold.dim_customer (customer_key, customer_id)
+VALUES (0, 'Unknown');
+
+
+--Dim Product
+
+USE CATALOG retail_catalog;
+USE SCHEMA gold;
+
+CREATE OR REPLACE TABLE gold.dim_product
+USING DELTA
+AS
+SELECT
+    ROW_NUMBER() OVER (ORDER BY item) AS product_key,
+    item,
+    category
+FROM (
+    SELECT DISTINCT item, category
+    FROM silver.retail_sales_clean
+);
+select * from gold.dim_product limit 5;
+
+INSERT INTO gold.dim_product (product_key, item, category)
+VALUES (0, 'Unknown', 'Unknown');
+
+
+--Dim Location
+
+CREATE OR REPLACE TABLE gold.dim_location
+USING DELTA
+AS
+SELECT DISTINCT
+  location,
+  DENSE_RANK() OVER (ORDER BY location) AS location_key
+FROM silver.retail_sales_clean;
+
+select * from gold.dim_location limit 5;
+
+INSERT INTO gold.dim_location (location_key, location)
+VALUES (0, 'Unknown');
+
+
+--Dim Payment Method
+
+CREATE OR REPLACE TABLE gold.dim_payment_method
+USING DELTA
+AS
+SELECT DISTINCT
+  payment_method,
+  DENSE_RANK() OVER (ORDER BY payment_method) AS payment_key
+FROM silver.retail_sales_clean;
+
+select * from gold.dim_payment_method limit 5;
+
+INSERT INTO gold.dim_payment_method (payment_key, payment_method)
+VALUES (0, 'Unknown');
+
+--Dim Date
+
+CREATE OR REPLACE TABLE dim_date
+USING DELTA
+AS
+SELECT
+  date AS transaction_date,
+  DENSE_RANK() OVER (ORDER BY date) AS date_key,
+  year,
+  month,
+  month_name,
+  quarter,
+  week_of_year,
+  day
+FROM retail_catalog.silver.dim_calendar_final;
+
+select * from dim_date limit 5;
+
+INSERT INTO gold.dim_date (date_key, transaction_date)
+VALUES (0, DATE '1900-01-01');
+

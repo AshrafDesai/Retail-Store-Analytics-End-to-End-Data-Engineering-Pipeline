@@ -1,0 +1,47 @@
+CREATE OR REPLACE TABLE bronze.retail_sales_raw
+USING DELTA
+AS
+SELECT *
+FROM read_files(
+  '/Volumes/retail_catalog/bronze/raw_data_volume/retail_store_sales.csv',
+  format => 'csv',
+  header => 'true',
+  inferSchema => 'true'
+);
+
+SELECT *
+FROM read_files(
+  '/Volumes/retail_catalog/bronze/raw_data_volume/retail_store_sales.csv',
+  format => 'csv',
+  header => 'true',
+  inferSchema => 'true'
+)
+LIMIT 5;
+
+
+--Create Bronze Table with Clean Column Names
+
+CREATE OR REPLACE TABLE bronze.retail_sales_raw
+USING DELTA
+AS
+SELECT
+  `Transaction ID`    AS transaction_id,
+  `Customer ID`       AS customer_id,
+  `Category`          AS category,
+  `Item`              AS item,
+  `Price Per Unit`    AS price_per_unit,
+  `Quantity`          AS quantity,
+  `Total Spent`       AS total_spent,
+  `Payment Method`    AS payment_method,
+  `Location`          AS location,
+  `Transaction Date`  AS transaction_date,
+  `Discount Applied`  AS discount_applied
+FROM read_files(
+  '/Volumes/retail_catalog/bronze/raw_data_volume/retail_store_sales.csv',
+  format => 'csv',
+  header => 'true',
+  inferSchema => 'true'
+);
+
+
+select * from bronze.retail_sales_raw LIMIT 5;

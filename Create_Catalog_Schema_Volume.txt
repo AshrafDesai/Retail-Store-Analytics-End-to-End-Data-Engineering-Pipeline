@@ -1,0 +1,14 @@
+-- Create Catalog
+CREATE CATALOG IF NOT EXISTS retail_catalog;
+
+-- Use Catalog
+USE CATALOG retail_catalog;
+
+-- Create Schemas
+CREATE SCHEMA IF NOT EXISTS bronze;
+CREATE SCHEMA IF NOT EXISTS silver;
+CREATE SCHEMA IF NOT EXISTS gold;
+
+--Create Volume
+
+CREATE VOLUME IF NOT EXISTS bronze.raw_data_volume;

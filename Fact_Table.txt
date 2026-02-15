@@ -1,0 +1,50 @@
+use catalog retail_catalog;
+use gold;
+DESCRIBE TABLE retail_catalog.gold.dim_product;
+
+--Fact Table
+CREATE OR REPLACE TABLE gold.fact_sales
+USING DELTA
+AS
+SELECT
+    COALESCE(c.customer_key, 0)        AS customer_key,
+    COALESCE(p.product_key, 0)         AS product_key,
+    COALESCE(l.location_key, 0)        AS location_key,
+    COALESCE(pm.payment_key, 0)        AS payment_key,
+    COALESCE(d.date_key, 0)            AS date_key,
+    s.quantity,
+    s.price_per_unit,
+    s.total_spent,
+    s.discount_applied
+FROM silver.retail_sales_clean s
+LEFT JOIN gold.dim_customer c
+  ON s.customer_id = c.customer_id
+LEFT JOIN gold.dim_product p
+  ON s.item = p.item
+LEFT JOIN gold.dim_location l
+  ON s.location = l.location
+LEFT JOIN gold.dim_payment_method pm
+  ON s.payment_method = pm.payment_method
+LEFT JOIN gold.dim_date d
+  ON s.transaction_date = d.transaction_date;
+
+
+select * from gold.fact_sales limit 5;
+
+
+--Validation Checks
+
+SELECT COUNT(*) FROM bronze.retail_sales_raw;
+SELECT COUNT(*) FROM silver.retail_sales_clean;
+SELECT COUNT(*) FROM gold.fact_sales;
+
+--Check null keys:
+
+SELECT *
+FROM gold.fact_sales
+WHERE customer_key IS NULL
+   OR product_key IS NULL
+   OR location_key IS NULL
+   OR payment_key IS NULL
+   OR date_key IS NULL;
+
